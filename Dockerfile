@@ -1,5 +1,5 @@
 # Multi-stage build for production optimization
-FROM python:3.13-slim as base
+FROM python:3.13-slim AS base
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -25,7 +25,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Production stage
-FROM base as production
+FROM base AS production
 
 # Create non-root user for security
 RUN groupadd -r appuser && useradd --no-log-init -r -g appuser appuser
@@ -67,7 +67,7 @@ ENTRYPOINT ["./docker-entrypoint.sh"]
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "senangkira.wsgi:application"]
 
 # Development stage
-FROM base as development
+FROM base AS development
 
 # Install development dependencies
 COPY requirements-test.txt .
