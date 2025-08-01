@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',  # JWT blacklist functionality
     'corsheaders',
     'django_filters',  # For advanced filtering
+    'django_celery_beat',  # Celery beat scheduler
     
     # Local apps
     'authentication',
