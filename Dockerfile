@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     netcat-traditional \
     build-essential \
     libpq-dev \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better Docker layer caching
@@ -59,9 +60,9 @@ RUN python manage.py collectstatic --noinput
 # Expose port
 EXPOSE 8000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD python manage.py check --deploy --verbosity=0 || exit 1
+# Health check - Commented out to use docker-compose.yaml healthcheck definitions instead
+# HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+#     CMD python manage.py check --deploy --verbosity=0 || exit 1
 
 # Run entrypoint script
 ENTRYPOINT ["./docker-entrypoint.sh"]
