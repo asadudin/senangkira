@@ -25,14 +25,15 @@ wait_for_service() {
     echo -e "${GREEN}✅ $service is ready!${NC}"
 }
 
-# Wait for database
+# Wait for external database (if specified)
 if [ "$DATABASE_URL" ]; then
     # Extract host and port from DATABASE_URL
     DB_HOST=$(echo $DATABASE_URL | sed -n 's/.*@\([^:]*\):.*/\1/p')
     DB_PORT=$(echo $DATABASE_URL | sed -n 's/.*:\([0-9]*\)\/.*/\1/p')
     
     if [ "$DB_HOST" ] && [ "$DB_PORT" ]; then
-        wait_for_service $DB_HOST $DB_PORT "PostgreSQL Database"
+        echo -e "${YELLOW}🔗 Connecting to external PostgreSQL at $DB_HOST:$DB_PORT${NC}"
+        wait_for_service $DB_HOST $DB_PORT "External PostgreSQL Database"
     fi
 fi
 

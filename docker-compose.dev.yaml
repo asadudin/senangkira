@@ -12,7 +12,7 @@ services:
       target: development
     environment:
       - DEBUG=True
-      - DATABASE_URL=postgresql://padux:passwordrahsia@db:5432/senangkira
+      - DATABASE_URL=${DATABASE_URL}
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
       - SECRET_KEY=django-dev-secret-key-not-for-production
@@ -23,7 +23,7 @@ services:
       - /app/venv  # Exclude venv from mounting
     command: python manage.py runserver 0.0.0.0:8000
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8000/api/health/", "||", "exit", "1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -36,7 +36,7 @@ services:
       target: development
     environment:
       - DEBUG=True
-      - DATABASE_URL=postgresql://padux:passwordrahsia@db:5432/senangkira
+      - DATABASE_URL=${DATABASE_URL}
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
       - SECRET_KEY=django-dev-secret-key-not-for-production
@@ -53,7 +53,7 @@ services:
       target: development
     environment:
       - DEBUG=True
-      - DATABASE_URL=postgresql://padux:passwordrahsia@db:5432/senangkira
+      - DATABASE_URL=${DATABASE_URL}
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
       - SECRET_KEY=django-dev-secret-key-not-for-production
@@ -61,7 +61,3 @@ services:
       - .:/app
       - /app/venv
     command: celery -A senangkira beat --loglevel=debug
-
-  # Remove nginx in development
-  nginx:
-    profiles: ["production"]

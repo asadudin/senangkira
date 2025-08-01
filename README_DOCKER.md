@@ -39,12 +39,14 @@ docker-compose ps
 | Service | Port | Description |
 |---------|------|-------------|
 | **web** | 8000 | Django application server |
-| **db** | 5432 | PostgreSQL database |
 | **redis** | 6379 | Redis cache & message broker |
 | **celery-worker** | - | Background task processor |
 | **celery-beat** | - | Periodic task scheduler |
 | **celery-flower** | 5555 | Celery monitoring dashboard |
-| **nginx** | 80/443 | Reverse proxy & static files |
+
+**External Dependencies:**
+- **PostgreSQL** - External database server (not containerized)
+- **Nginx** - External reverse proxy (not containerized)
 
 ## 🔧 Configuration
 
@@ -59,7 +61,7 @@ cp .env.example .env
 **Essential Variables:**
 ```env
 SECRET_KEY=your-super-secret-key-change-this
-DB_PASSWORD=your-secure-database-password
+DATABASE_URL=postgresql://username:password@your-postgres-host:5432/senangkira
 SUPERUSER_USERNAME=admin
 SUPERUSER_EMAIL=admin@yourdomain.com
 SUPERUSER_PASSWORD=your-admin-password
@@ -95,11 +97,13 @@ docker-compose logs -f web
 
 ### Database Operations
 
+**Note:** Database operations connect to your external PostgreSQL server.
+
 ```bash
-# Run migrations
+# Run migrations on external database
 docker-compose exec web python manage.py migrate
 
-# Create superuser
+# Create superuser (or use environment variables)
 docker-compose exec web python manage.py createsuperuser
 
 # Load fixtures
@@ -123,28 +127,36 @@ docker-compose exec web python manage.py shell
 
 ## 🚀 Production Deployment
 
-### SSL Configuration
+### External Infrastructure Setup
 
-1. Place certificates in `./ssl/` directory:
+**PostgreSQL Database:**
+1. Set up external PostgreSQL server
+2. Create database and user:
+   ```sql
+   CREATE DATABASE senangkira;
+   CREATE USER senangkira_user WITH PASSWORD 'your_password';
+   GRANT ALL PRIVILEGES ON DATABASE senangkira TO senangkira_user;
    ```
-   ssl/
-   ├── cert.pem
-   └── key.pem
-   ```
+3. Configure `DATABASE_URL` in `.env` file
 
-2. Update nginx configuration for HTTPS
-3. Set `ALLOWED_HOSTS` in .env file
+**Nginx Reverse Proxy:**
+1. Configure external Nginx server
+2. Set up SSL certificates on Nginx server
+3. Configure proxy_pass to Docker containers
+4. Set up static file serving
 
 ### Production Checklist
 
+- [ ] Set up external PostgreSQL database
+- [ ] Configure external Nginx reverse proxy
 - [ ] Set strong `SECRET_KEY`
-- [ ] Configure secure database password
-- [ ] Set up SSL certificates
-- [ ] Configure email settings for reminders
+- [ ] Configure `DATABASE_URL` with external database
+- [ ] Set up SSL certificates on Nginx server
+- [ ] Configure email settings for reminders  
 - [ ] Set appropriate `ALLOWED_HOSTS`
 - [ ] Enable monitoring with Flower authentication
 - [ ] Set up log rotation
-- [ ] Configure backup strategy
+- [ ] Configure backup strategy for external database
 
 ### Starting Production
 
@@ -174,15 +186,18 @@ docker inspect --format='{{.State.Health.Status}}' senangkira_web
 
 ### Backup & Restore
 
+**Note:** Backup operations target your external PostgreSQL database.
+
 ```bash
-# Database backup
-docker-compose exec db pg_dump -U padux senangkira > backup.sql
+# Database backup (from external PostgreSQL)
+pg_dump -h your-postgres-host -U your-username -d senangkira > backup.sql
 
-# Database restore
-cat backup.sql | docker-compose exec -T db psql -U padux senangkira
+# Database restore (to external PostgreSQL)  
+psql -h your-postgres-host -U your-username -d senangkira < backup.sql
 
-# Volume backup
-docker run --rm -v senangkira_postgres_data:/data -v $(pwd):/backup ubuntu tar czf /backup/postgres_backup.tar.gz /data
+# Redis data backup (containerized Redis)
+docker-compose exec redis redis-cli BGSAVE
+docker cp senangkira_redis:/data/dump.rdb ./redis_backup.rdb
 ```
 
 ### Log Management
@@ -202,13 +217,13 @@ docker-compose exec nginx tail -f /var/log/nginx/access.log
 
 ### Common Issues
 
-**Database Connection Issues:**
+**External Database Connection Issues:**
 ```bash
-# Check database status
-docker-compose exec db pg_isready -U padux
+# Test external database connectivity from container
+docker-compose exec web python manage.py dbshell -c "SELECT 1;"
 
-# View database logs
-docker-compose logs db
+# Check database connectivity from host
+pg_isready -h your-postgres-host -p 5432 -U your-username
 ```
 
 **Celery Worker Issues:**

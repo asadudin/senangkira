@@ -4,28 +4,6 @@ version: '3.8'
 # Usage: docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up
 
 services:
-  # Production database with optimized settings
-  db:
-    environment:
-      POSTGRES_DB: senangkira
-      POSTGRES_USER: padux  
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    command: >
-      postgres
-      -c max_connections=200
-      -c shared_buffers=256MB
-      -c effective_cache_size=1GB
-      -c maintenance_work_mem=64MB
-      -c checkpoint_completion_target=0.9
-      -c wal_buffers=16MB
-      -c default_statistics_target=100
-      -c random_page_cost=1.1
-      -c effective_io_concurrency=200
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./backups:/var/backups
-    restart: unless-stopped
-
   # Production Redis with persistence
   redis:
     command: >
@@ -43,7 +21,7 @@ services:
     environment:
       - DEBUG=False
       - SECRET_KEY=${SECRET_KEY}
-      - DATABASE_URL=postgresql://padux:${DB_PASSWORD}@db:5432/senangkira
+      - DATABASE_URL=${DATABASE_URL}
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1}
@@ -80,7 +58,7 @@ services:
     environment:
       - DEBUG=False
       - SECRET_KEY=${SECRET_KEY}
-      - DATABASE_URL=postgresql://padux:${DB_PASSWORD}@db:5432/senangkira
+      - DATABASE_URL=${DATABASE_URL}
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
       - EMAIL_HOST_USER=${EMAIL_HOST_USER}
@@ -105,7 +83,7 @@ services:
     environment:
       - DEBUG=False
       - SECRET_KEY=${SECRET_KEY}
-      - DATABASE_URL=postgresql://padux:${DB_PASSWORD}@db:5432/senangkira
+      - DATABASE_URL=${DATABASE_URL}
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
     command: >
@@ -135,22 +113,6 @@ services:
     volumes:
       - flower_data:/app
     restart: unless-stopped
-
-  # Production nginx with SSL
-  nginx:
-    volumes:
-      - ./nginx.prod.conf:/etc/nginx/nginx.conf:ro
-      - static_volume:/var/www/static:ro
-      - media_volume:/var/www/media:ro
-      - ./ssl:/etc/nginx/ssl:ro
-      - ./logs/nginx:/var/log/nginx
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 128M
-        reservations:
-          memory: 64M
 
 volumes:
   flower_data:
