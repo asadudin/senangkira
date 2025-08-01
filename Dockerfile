@@ -41,9 +41,10 @@ COPY --chown=appuser:appuser dashboard/ dashboard/
 COPY --chown=appuser:appuser reminders/ reminders/
 COPY --chown=appuser:appuser monitoring/ monitoring/
 
-# Create required directories
+# Create required directories with proper permissions
 RUN mkdir -p /app/logs /app/staticfiles /app/media \
-    && chown -R appuser:appuser /app/logs /app/staticfiles /app/media
+    && chown -R appuser:appuser /app/logs /app/staticfiles /app/media \
+    && chmod 755 /app/logs /app/staticfiles /app/media
 
 # Copy entrypoint script
 COPY --chown=appuser:appuser docker-entrypoint.sh .
