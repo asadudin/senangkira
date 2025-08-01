@@ -87,7 +87,7 @@ fi
 
 # Health check
 echo -e "${YELLOW}🏥 Running health checks...${NC}"
-python manage.py check --deploy
+python manage.py check --deploy --verbosity=0
 
 echo -e "${GREEN}✅ SenangKira is ready to start!${NC}"
 echo -e "${GREEN}🎯 Starting application with command: $@${NC}"

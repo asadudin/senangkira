@@ -61,7 +61,7 @@ EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD python manage.py check --deploy || exit 1
+    CMD python manage.py check --deploy --verbosity=0 || exit 1
 
 # Run entrypoint script
 ENTRYPOINT ["./docker-entrypoint.sh"]
