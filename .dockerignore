@@ -1,0 +1,145 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile*
+docker-compose*.yaml
+docker-compose*.yml
+.dockerignore
+
+# Documentation and reports
+*.md
+docs/
+reports/
+
+# Test files
+test_*.py
+*_test.py
+tests/
+pytest.ini
+tox.ini
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Performance and validation files
+performance_test_*.py
+performance_test_*.json
+validate_*.py
+run_*.py
+*_benchmark*.py
+benchmark_*.py
+
+# Logs
+logs/
+*.log
+
+# Static files (will be collected in container)
+staticfiles/
+static/
+
+# Media files (should use volumes)
+media/
+
+# Database
+*.db
+*.sqlite3
+
+# Environment files
+.env
+.env.*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Backup files
+*.bak
+*.backup
+
+# Generated migration files during development
+*/migrations/0*.py
+!*/migrations/0001_initial.py
+
+# Cache
+.cache/
+*.cache
+
+# Node modules (if any)
+node_modules/
+
+# Compiled files
+*.pyc
+*.pyo
+*.pyd
+
+# Specific development/test files to exclude
+create_initial_migrations.py
+generate_migrations.py
+deploy_schema.py
+functional_test_conversion.py
+integration_test_conversion.py
+test_atomic_conversion.py
+test_celery_*.py
+test_sk*.py
+test_setup.py
+test_execution_report.md
+test_improvement_recommendations.md
+CELERY_SCHEDULED_TASKS_IMPLEMENTED.md
+DASHBOARD_BENCHMARK_REPORT.md
+SK-*_COMPLETED.md
+SK-*_Report.md
+Makefile
+
+# Validation and analysis files
+validate_*.py
+*_validation.py
+*_analysis.py

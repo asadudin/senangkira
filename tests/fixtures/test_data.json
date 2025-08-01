@@ -1,0 +1,245 @@
+{
+  "users": [
+    {
+      "id": "test-user-1",
+      "email": "user1@senangkira.com",
+      "username": "testuser1",
+      "password": "TestPass123!",
+      "first_name": "Test",
+      "last_name": "User One",
+      "is_active": true
+    },
+    {
+      "id": "test-user-2", 
+      "email": "user2@senangkira.com",
+      "username": "testuser2",
+      "password": "TestPass123!",
+      "first_name": "Test",
+      "last_name": "User Two",
+      "is_active": true
+    },
+    {
+      "id": "test-admin",
+      "email": "admin@senangkira.com", 
+      "username": "testadmin",
+      "password": "AdminPass123!",
+      "first_name": "Test",
+      "last_name": "Admin",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": true
+    }
+  ],
+  "clients": [
+    {
+      "id": "client-1",
+      "name": "Tech Solutions Inc",
+      "email": "contact@techsolutions.com",
+      "phone": "+1-555-0101",
+      "address": "123 Business Ave",
+      "city": "San Francisco",
+      "state": "CA",
+      "postal_code": "94105",
+      "country": "USA",
+      "owner": "test-user-1"
+    },
+    {
+      "id": "client-2",
+      "name": "Creative Design Studio",
+      "email": "hello@creativedesign.com",
+      "phone": "+1-555-0202",
+      "address": "456 Design Street",
+      "city": "New York",
+      "state": "NY", 
+      "postal_code": "10001",
+      "country": "USA",
+      "owner": "test-user-1"
+    },
+    {
+      "id": "client-3",
+      "name": "Global Marketing Corp",
+      "email": "info@globalmarketing.com",
+      "phone": "+1-555-0303",
+      "address": "789 Marketing Blvd",
+      "city": "Chicago",
+      "state": "IL",
+      "postal_code": "60601",
+      "country": "USA",
+      "owner": "test-user-2"
+    }
+  ],
+  "quotes": [
+    {
+      "id": "quote-1",
+      "title": "Website Development Project",
+      "description": "Complete website development with modern design",
+      "status": "draft",
+      "tax_rate": 0.08,
+      "notes": "Standard web development project",
+      "valid_until": "2024-12-31",
+      "owner": "test-user-1",
+      "client": "client-1",
+      "line_items": [
+        {
+          "description": "Frontend Development",
+          "quantity": 80,
+          "unit_price": 125.00,
+          "sort_order": 1
+        },
+        {
+          "description": "Backend Development",
+          "quantity": 60,
+          "unit_price": 150.00,
+          "sort_order": 2
+        },
+        {
+          "description": "UI/UX Design",
+          "quantity": 40,
+          "unit_price": 100.00,
+          "sort_order": 3
+        }
+      ]
+    },
+    {
+      "id": "quote-2",
+      "title": "Mobile App Development",
+      "description": "iOS and Android mobile application",
+      "status": "sent",
+      "tax_rate": 0.08,
+      "notes": "Cross-platform mobile app",
+      "valid_until": "2024-12-31",
+      "owner": "test-user-1",
+      "client": "client-2",
+      "line_items": [
+        {
+          "description": "Mobile Development",
+          "quantity": 120,
+          "unit_price": 140.00,
+          "sort_order": 1
+        },
+        {
+          "description": "App Store Deployment",
+          "quantity": 10,
+          "unit_price": 200.00,
+          "sort_order": 2
+        }
+      ]
+    },
+    {
+      "id": "quote-3",
+      "title": "Marketing Campaign Setup",
+      "description": "Complete digital marketing campaign",
+      "status": "accepted",
+      "tax_rate": 0.08,
+      "notes": "Multi-channel marketing approach",
+      "valid_until": "2024-12-31",
+      "owner": "test-user-2",
+      "client": "client-3",
+      "line_items": [
+        {
+          "description": "Campaign Strategy",
+          "quantity": 20,
+          "unit_price": 175.00,
+          "sort_order": 1
+        },
+        {
+          "description": "Content Creation",
+          "quantity": 30,
+          "unit_price": 120.00,
+          "sort_order": 2
+        },
+        {
+          "description": "Ad Management",
+          "quantity": 40,
+          "unit_price": 80.00,
+          "sort_order": 3
+        }
+      ]
+    }
+  ],
+  "invoices": [
+    {
+      "id": "invoice-1",
+      "title": "Consulting Services - January",
+      "description": "Monthly consulting services",
+      "status": "sent",
+      "tax_rate": 0.08,
+      "due_date": "2024-02-28",
+      "notes": "Payment due within 30 days",
+      "owner": "test-user-1",
+      "client": "client-1",
+      "source_quote": null,
+      "line_items": [
+        {
+          "description": "Business Consulting",
+          "quantity": 40,
+          "unit_price": 200.00,
+          "sort_order": 1
+        },
+        {
+          "description": "Technical Advisory",
+          "quantity": 20,
+          "unit_price": 250.00,
+          "sort_order": 2
+        }
+      ]
+    },
+    {
+      "id": "invoice-2",
+      "title": "Design Services - January",
+      "description": "Graphic design and branding",
+      "status": "paid",
+      "tax_rate": 0.08,
+      "due_date": "2024-02-15",
+      "paid_date": "2024-02-10",
+      "payment_method": "bank_transfer",
+      "notes": "Paid early with bank transfer",
+      "owner": "test-user-2",
+      "client": "client-3",
+      "source_quote": null,
+      "line_items": [
+        {
+          "description": "Logo Design",
+          "quantity": 1,
+          "unit_price": 1500.00,
+          "sort_order": 1
+        },
+        {
+          "description": "Brand Guidelines",
+          "quantity": 1,
+          "unit_price": 800.00,
+          "sort_order": 2
+        }
+      ]
+    }
+  ],
+  "expenses": [
+    {
+      "id": "expense-1",
+      "description": "Office Software Licenses",
+      "amount": 299.99,
+      "date": "2024-01-15",
+      "category": "software",
+      "receipt_url": "https://example.com/receipt1.pdf",
+      "owner": "test-user-1"
+    },
+    {
+      "id": "expense-2",
+      "description": "Client Meeting Lunch",
+      "amount": 85.50,
+      "date": "2024-01-20",
+      "category": "meals",
+      "receipt_url": "https://example.com/receipt2.pdf",
+      "owner": "test-user-1"
+    },
+    {
+      "id": "expense-3",
+      "description": "Marketing Materials",
+      "amount": 450.00,
+      "date": "2024-01-25",
+      "category": "marketing",
+      "receipt_url": "https://example.com/receipt3.pdf",
+      "owner": "test-user-2"
+    }
+  ]
+}

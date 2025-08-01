@@ -1,0 +1,157 @@
+version: '3.8'
+
+# Production overrides for docker-compose.yaml
+# Usage: docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up
+
+services:
+  # Production database with optimized settings
+  db:
+    environment:
+      POSTGRES_DB: senangkira
+      POSTGRES_USER: padux  
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/var/backups
+    restart: unless-stopped
+
+  # Production Redis with persistence
+  redis:
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+    restart: unless-stopped
+
+  # Production web service with Gunicorn
+  web:
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=postgresql://padux:${DB_PASSWORD}@db:5432/senangkira
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - DJANGO_SUPERUSER_USERNAME=${SUPERUSER_USERNAME}
+      - DJANGO_SUPERUSER_EMAIL=${SUPERUSER_EMAIL}
+      - DJANGO_SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD}
+      - WARM_CACHE=true
+    command: >
+      gunicorn senangkira.wsgi:application
+      --bind 0.0.0.0:8000
+      --workers 4
+      --worker-class gthread
+      --threads 2
+      --worker-connections 1000
+      --max-requests 1000
+      --max-requests-jitter 100
+      --timeout 30
+      --keepalive 5
+      --access-logfile -
+      --error-logfile -
+      --log-level info
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  # Production Celery worker
+  celery-worker:
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=postgresql://padux:${DB_PASSWORD}@db:5432/senangkira
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+    command: >
+      celery -A senangkira worker
+      --loglevel=info
+      --concurrency=4
+      --max-tasks-per-child=1000
+      --time-limit=300
+      --soft-time-limit=240
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+
+  # Production Celery beat
+  celery-beat:
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=postgresql://padux:${DB_PASSWORD}@db:5432/senangkira
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    command: >
+      celery -A senangkira beat
+      --loglevel=info
+      --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+
+  # Production Celery flower with authentication
+  celery-flower:
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - FLOWER_BASIC_AUTH=${FLOWER_USER}:${FLOWER_PASSWORD}
+    command: >
+      celery -A senangkira flower
+      --port=5555
+      --max_tasks=10000
+      --persistent=True
+      --db=/app/flower.db
+    volumes:
+      - flower_data:/app
+    restart: unless-stopped
+
+  # Production nginx with SSL
+  nginx:
+    volumes:
+      - ./nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/var/www/static:ro
+      - media_volume:/var/www/media:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./logs/nginx:/var/log/nginx
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+
+volumes:
+  flower_data:
+    driver: local

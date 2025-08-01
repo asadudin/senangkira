@@ -1,0 +1,74 @@
+# Testing dependencies for SenangKira application
+
+# Core testing framework
+pytest>=7.4.0
+pytest-django>=4.5.2
+pytest-cov>=4.1.0
+pytest-xdist>=3.3.1  # Parallel test execution
+pytest-mock>=3.11.1
+pytest-html>=3.2.0  # HTML test reports
+
+# Factory Boy for test data generation
+factory_boy>=3.3.0
+faker>=19.3.0
+
+# Browser automation for E2E tests
+playwright>=1.36.0
+pytest-playwright>=0.4.2
+
+# API testing
+requests>=2.31.0
+responses>=0.23.0  # Mock HTTP requests
+
+# Performance testing
+pytest-benchmark>=4.0.0
+locust>=2.16.1  # Load testing
+
+# Database testing
+pytest-postgresql>=5.0.0
+pytest-mock>=3.11.1
+
+# Code quality and coverage
+coverage>=7.2.7
+pytest-cov>=4.1.0
+codecov>=2.1.13
+
+# Security testing
+bandit>=1.7.5
+safety>=2.3.0
+
+# Linting and formatting
+flake8>=6.0.0
+black>=23.7.0
+isort>=5.12.0
+mypy>=1.5.0
+
+# Django testing utilities
+django-test-plus>=2.2.0
+django-webtest>=1.9.11
+model-bakery>=1.12.0  # Alternative to factory_boy
+
+# Time and date testing
+freezegun>=1.2.2
+time-machine>=2.10.0
+
+# Environment testing
+pytest-env>=0.8.2
+python-dotenv>=1.0.0
+
+# Async testing support
+pytest-asyncio>=0.21.1
+
+# Visual regression testing
+pytest-image-diff>=0.0.11
+
+# Test data management
+django-extensions>=3.2.3  # For shell_plus and other utilities
+
+# Debugging and profiling
+pytest-profiling>=1.7.0
+line_profiler>=4.1.1
+memory_profiler>=0.61.0
+
+# CI/CD support
+pytest-github-actions-annotate-failures>=0.2.0

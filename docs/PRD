@@ -1,0 +1,135 @@
+Product Requirements Document: SenangKira Backend & Database
+Product: SenangKira
+
+Version: 1.0 (MVP)
+
+Date: July 30, 2025
+
+Status: Proposed
+
+1. Introduction
+This document outlines the functional and non-functional requirements for the backend server and database of SenangKira. The goal is to create a reliable, secure, and efficient REST API that powers a simple quote, invoice, and cash flow tracking application for freelancers and small businesses. The chosen architecture is a modular monolith using Django and a PostgreSQL database.
+
+2. Goals & Objectives
+To provide a stable and well-documented REST API for all frontend client operations.
+
+To ensure the integrity and security of all user and financial data.
+
+To implement the core business logic, including quote-to-invoice conversion and status tracking.
+
+To provide a foundation that is maintainable and can scale gracefully as the user base grows.
+
+3. User Stories
+The backend must support the following key user actions:
+
+As a user, I want to create an account and manage my company profile (name, logo, address) so my documents look professional.
+
+As a user, I want to add and manage a list of my clients so I can quickly create quotes and invoices for them.
+
+As a user, I want to create a quote with line items, save it as a draft, and send it to a client.
+
+As a user, I want to convert an approved quote into an invoice with a single click to save time.
+
+As a user, I want to track the status of my invoices (Sent, Viewed, Paid, Overdue) so I know who owes me money.
+
+As a user, I want the system to automatically send polite reminders for overdue invoices so I don't have to chase payments manually.
+
+As a user, I want to quickly record business expenses and upload a photo of the receipt for my records.
+
+As a user, I want to see a simple dashboard with my total money owed, monthly income vs. expenses, and recent cash flow.
+
+4. Functional Requirements
+Component 1: Database Schema (PostgreSQL)
+The database must include the following models, with relationships enforced by foreign keys.
+
+User Model:
+
+Fields: email (primary identifier), password (hashed), company_name, company_address, company_logo (image file path).
+
+Client Model:
+
+Fields: name, email, phone, address.
+
+Relationship: Many-to-one with User. A user can have many clients.
+
+Quote & Invoice Models:
+
+Fields: status (e.g., Draft, Sent, Approved, Paid, Overdue), issue_date, due_date, total_amount.
+
+Relationships: Many-to-one with User and Client. An invoice can optionally have a one-to-one relationship with a Quote.
+
+LineItem Model:
+
+Fields: description, quantity, unit_price.
+
+Relationship: Many-to-one with either Quote or Invoice.
+
+Expense Model:
+
+Fields: description, amount, date, receipt_image (optional image file path).
+
+Relationship: Many-to-one with User.
+
+Component 2: Backend API (Django REST Framework)
+The API must provide the following endpoints. All endpoints must be authenticated and authorized to ensure users can only access their own data.
+
+Authentication (/api/auth/)
+
+POST /register: Create a new User.
+
+POST /token: Log in a user and return a JSON Web Token (JWT).
+
+GET, PUT /profile: Manage the logged-in user's profile information.
+
+Clients (/api/clients/)
+
+GET: List all clients for the authenticated user.
+
+POST: Create a new client.
+
+GET, PUT, DELETE /:id: Manage a specific client.
+
+Quotes (/api/quotes/)
+
+GET, POST: List and create quotes.
+
+GET, PUT, DELETE /:id: Manage a specific quote.
+
+POST /:id/convert_to_invoice: Critical business logic. This endpoint must atomically create an Invoice and associated LineItems from the given Quote and update the quote's status.
+
+Invoices (/api/invoices/)
+
+GET, POST: List and create invoices.
+
+GET, PUT, DELETE /:id: Manage a specific invoice.
+
+POST /:id/mark_as_paid: A custom action to update the invoice status to "Paid".
+
+Expenses (/api/expenses/)
+
+GET, POST: List and create expenses.
+
+GET, PUT, DELETE /:id: Manage a specific expense.
+
+Dashboard (/api/dashboard/)
+
+GET: A read-only endpoint that calculates and returns key metrics:
+
+Total amount owed (from "Sent" and "Overdue" invoices).
+
+30-day snapshot (total income from "Paid" invoices, total expenses).
+
+Data for a 6-month income vs. expense chart.
+
+Background Tasks (Celery & Redis)
+
+A daily scheduled task will query for invoices that are 7, 14, or 30 days overdue and send a templated reminder email via a transactional email service (e.g., SendGrid, Mailgun).
+
+5. Non-Functional Requirements
+Security: All API endpoints must require JWT-based authentication. The system must enforce strict data tenancy; a user must never be able to see or modify another user's data. All user input must be validated and sanitized.
+
+Performance: Standard API responses should complete in under 500ms. Database queries for the dashboard must be optimized to prevent slow load times.
+
+Data Integrity: The quote-to-invoice conversion process must be wrapped in a database transaction to ensure it either completes fully or fails without leaving partial data.
+
+Error Handling: The API must return clear, consistent error messages and appropriate HTTP status codes (e.g., 400 for bad requests, 401 for unauthorized, 404 for not found).

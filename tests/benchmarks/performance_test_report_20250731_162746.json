@@ -1,0 +1,114 @@
+{
+  "test_execution": {
+    "timestamp": "2025-07-31T16:27:46.521437",
+    "total_tests": 10,
+    "successful_tests": 2,
+    "failed_tests": 8
+  },
+  "performance_summary": {
+    "avg_response_time_ms": 97.37,
+    "fastest_operation_ms": 3.45,
+    "slowest_operation_ms": 643.81,
+    "avg_memory_usage_mb": 3.38
+  },
+  "test_results": [
+    {
+      "test_name": "db_query_simple_clients",
+      "duration_ms": 4.95,
+      "memory_delta_mb": 0.0,
+      "success": true,
+      "error": null,
+      "metrics": {
+        "client_count": 50
+      }
+    },
+    {
+      "test_name": "db_query_complex_joins",
+      "duration_ms": 4.18,
+      "memory_delta_mb": 0.08,
+      "success": false,
+      "error": "Cannot find 'quoteline_items' on Quote object, 'quoteline_items' is an invalid parameter to prefetch_related()",
+      "metrics": {}
+    },
+    {
+      "test_name": "db_query_aggregations",
+      "duration_ms": 3.57,
+      "memory_delta_mb": 0.0,
+      "success": true,
+      "error": null,
+      "metrics": {
+        "aggregation_results": {
+          "total_revenue": 0,
+          "quote_count": 1.0,
+          "average_quote_value": 0
+        }
+      }
+    },
+    {
+      "test_name": "dashboard_aggregation_service",
+      "duration_ms": 4.94,
+      "memory_delta_mb": 0.02,
+      "success": false,
+      "error": "relation \"dashboard_dashboardsnapshot\" does not exist\nLINE 1: ..., \"dashboard_dashboardsnapshot\".\"updated_at\" FROM \"dashboard...\n                                                             ^",
+      "metrics": {}
+    },
+    {
+      "test_name": "dashboard_cache_effectiveness",
+      "duration_ms": 12.42,
+      "memory_delta_mb": 0.09,
+      "success": false,
+      "error": "invalid input value for enum invoice_status: \"sent\"\nLINE 1: ...97a67'::uuid AND \"invoicing_invoice\".\"status\" IN ('sent', 'o...\n                                                             ^",
+      "metrics": {}
+    },
+    {
+      "test_name": "api_endpoint_client_list",
+      "duration_ms": 643.81,
+      "memory_delta_mb": 29.77,
+      "success": false,
+      "error": "cannot import name 'make_key' from 'django.core.cache.utils' (/Users/synzmaster/Documents/Padux/Claude_Code_Project/senangkira/venv/lib/python3.13/site-packages/django/core/cache/utils.py)",
+      "metrics": {}
+    },
+    {
+      "test_name": "api_endpoint_quote_list",
+      "duration_ms": 116.57,
+      "memory_delta_mb": 2.14,
+      "success": false,
+      "error": "cannot import name 'make_key' from 'django.core.cache.utils' (/Users/synzmaster/Documents/Padux/Claude_Code_Project/senangkira/venv/lib/python3.13/site-packages/django/core/cache/utils.py)",
+      "metrics": {}
+    },
+    {
+      "test_name": "api_endpoint_dashboard_overview",
+      "duration_ms": 118.76,
+      "memory_delta_mb": 1.61,
+      "success": false,
+      "error": "cannot import name 'make_key' from 'django.core.cache.utils' (/Users/synzmaster/Documents/Padux/Claude_Code_Project/senangkira/venv/lib/python3.13/site-packages/django/core/cache/utils.py)",
+      "metrics": {}
+    },
+    {
+      "test_name": "concurrent_load_test",
+      "duration_ms": 61.01,
+      "memory_delta_mb": 0.12,
+      "success": false,
+      "error": null,
+      "metrics": {
+        "concurrent_users": 10,
+        "successful_operations": 0,
+        "failed_operations": 10,
+        "success_rate": 0.0
+      }
+    },
+    {
+      "test_name": "memory_usage_patterns",
+      "duration_ms": 3.45,
+      "memory_delta_mb": 0.0,
+      "success": false,
+      "error": "relation \"dashboard_dashboardsnapshot\" does not exist\nLINE 1: ..., \"dashboard_dashboardsnapshot\".\"updated_at\" FROM \"dashboard...\n                                                             ^",
+      "metrics": {}
+    }
+  ],
+  "system_info": {
+    "cpu_count": 10,
+    "memory_total_gb": 16.0,
+    "python_version": "3.13.3"
+  }
+}

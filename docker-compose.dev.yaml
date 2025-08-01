@@ -1,0 +1,67 @@
+version: '3.8'
+
+# Development overrides for docker-compose.yaml
+# Usage: docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up
+
+services:
+  # Development web service
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://padux:passwordrahsia@db:5432/senangkira
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - SECRET_KEY=django-dev-secret-key-not-for-production
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,web
+    volumes:
+      # Mount source code for hot reload
+      - .:/app
+      - /app/venv  # Exclude venv from mounting
+    command: python manage.py runserver 0.0.0.0:8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Development celery worker
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://padux:passwordrahsia@db:5432/senangkira
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - SECRET_KEY=django-dev-secret-key-not-for-production
+    volumes:
+      - .:/app
+      - /app/venv
+    command: celery -A senangkira worker --loglevel=debug --concurrency=1
+
+  # Development celery beat
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://padux:passwordrahsia@db:5432/senangkira
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - SECRET_KEY=django-dev-secret-key-not-for-production
+    volumes:
+      - .:/app
+      - /app/venv
+    command: celery -A senangkira beat --loglevel=debug
+
+  # Remove nginx in development
+  nginx:
+    profiles: ["production"]

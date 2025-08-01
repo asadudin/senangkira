@@ -1,0 +1,1 @@
+DATABASE_URL="postgresql://padux:passwordrahsia@192.168.31.117:5432/senangkira?schema=public"
