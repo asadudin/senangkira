@@ -104,12 +104,23 @@ services:
       target: production
     container_name: senangkira_flower
     environment:
+      - DEBUG=False
+      - DATABASE_URL=${DATABASE_URL}
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/1
+      - SECRET_KEY=${SECRET_KEY}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1}
     command: celery -A senangkira flower --port=5555
+    volumes:
+      - ./logs:/app/logs
     depends_on:
-      - redis
-      - celery-worker
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5555/", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - padux
 
